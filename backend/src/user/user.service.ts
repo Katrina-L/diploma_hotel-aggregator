@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './user.schema';
 import { IUserService, SearchUserParams } from './user.interface';
@@ -17,7 +17,14 @@ export class UserService implements IUserService {
     }
 
     async findById(id: string): Promise<User> {
-        return this.userModel.findById(id).exec();
+        const user = await this.userModel.findById(id).exec();
+
+        if ( !user ) {
+            throw new NotFoundException (`Пользователь с id ${id} не найден`); 
+            // throw new Error(`Пользователь с id ${id} не найден`);
+        }
+        
+        return  user;
     }
 
     async findByEmail(email: string): Promise<User> {
@@ -29,15 +36,15 @@ export class UserService implements IUserService {
         const query: any = {};
 
         if ( email ) {
-            query.email = new RegExp(email, "i");
+            query["email"] = {$regex: email, $options: "i"};
         }
 
         if ( name ) {
-            query.name = new RegExp(name, "i");
+            query["name"] = {$regex: name, $options: "i"};
         }
 
         if ( contactPhone ) {
-            query.contactPhone = new RegExp(contactPhone, "i");
+            query["contactPhone"] = {$regex: contactPhone, $options: "i"};
         }
 
         return this.userModel.find(query).skip(offset).limit(limit).exec();
