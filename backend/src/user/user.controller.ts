@@ -45,7 +45,7 @@ export class UserController {
     
     @Get(":id")
     async findById( @Param("id") id: string ): Promise<User> {
-        return this.userService.findById(id);
+        return await this.userService.findById(id);
     }
     
     @Get()
@@ -57,7 +57,7 @@ export class UserController {
             name: query.name,
             contactPhone: query.contactPhone,
         }
-        return this.userService.findAll(params);
+        return await this.userService.findAll(params);
     }
 }
 
@@ -77,6 +77,6 @@ export class ManagerUserController {
             name: query.name,
             contactPhone: query.contactPhone,
         }
-        return this.userService.findAll(params);
+        return await this.userService.findAll(params);
     }
 }

@@ -28,7 +28,7 @@ export class UserService implements IUserService {
     }
 
     async findByEmail(email: string): Promise<User> {
-        return this.userModel.findOne( {email} ).exec();
+        return await this.userModel.findOne( {email} ).exec();
     }
 
     async findAll(params: SearchUserParams): Promise<User[]> {
@@ -47,6 +47,6 @@ export class UserService implements IUserService {
             query["contactPhone"] = {$regex: contactPhone, $options: "i"};
         }
 
-        return this.userModel.find(query).skip(offset).limit(limit).exec();
+        return await this.userModel.find(query).skip(offset).limit(limit).exec();
     }
 }
