@@ -7,29 +7,29 @@ import { Model } from "mongoose";
 
 @Injectable()
 export class HotelRoomService implements IHotelRoomService {
-    constructor (@InjectModel(HotelRoom.name) private hotelRoomModel: Model<HotelRoomDocument>) {}
+    constructor ( @InjectModel(HotelRoom.name) private hotelRoomModel: Model<HotelRoomDocument> ) {}
 
-    create( data: Partial<HotelRoom> ): Promise<HotelRoom> {
+    async create( data: Partial<HotelRoom> ): Promise<HotelRoom> {
         const newHotelRoom = new this.hotelRoomModel(data);
-        return newHotelRoom.save();
+        return await newHotelRoom.save();
     };
 
-    findById( id: string ): Promise<HotelRoom> {
-        return this.hotelRoomModel.findById(id).populate("hotel").exec();
+    async findById( id: string ): Promise<HotelRoom> {
+        return await this.hotelRoomModel.findById(id).populate("hotel").exec();
     };
 
-    search( params: SearchRoomParams ): Promise<HotelRoom[]> {
+    async search( params: SearchRoomParams ): Promise<HotelRoom[]> {
         const { limit, offset, hotel, isEnabled } = params;
-        const query: any = { hotel };
+        const query = { hotel };
 
         if ( isEnabled !== undefined ) {
-            query.isEnabled = isEnabled;
+            query["isEnabled"] = isEnabled;
         }
 
-        return this.hotelRoomModel.find(query).skip(offset).limit(limit).populate("hotel").exec();
+        return await this.hotelRoomModel.find(query).skip(offset).limit(limit).populate("hotel").exec();
     };
 
-    update( id: string, data: Partial<HotelRoom> ): Promise<HotelRoom> {
-        return this.hotelRoomModel.findByIdAndUpdate(id, data, { new: true }).exec();
+    async update( id: string, data: Partial<HotelRoom> ): Promise<HotelRoom> {
+        return await this.hotelRoomModel.findByIdAndUpdate(id, data, { new: true }).exec();
     };
 }

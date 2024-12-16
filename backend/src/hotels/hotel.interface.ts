@@ -1,17 +1,16 @@
 /* eslint-disable prettier/prettier */
-
 import { HotelRoom } from "./hotel-room.schema";
 import { Hotel } from "./hotel.schema";
 
 export interface SearchHotelParams {
     limit: number;
     offset: number;
-    title: string;
+    title?: string;
 }
 
 export interface UpdateHotelParams {
     title: string;
-    description: string;
+    description?: string;
 }
 
 export interface IHotelService {
