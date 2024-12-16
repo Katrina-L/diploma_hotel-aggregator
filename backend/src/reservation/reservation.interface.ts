@@ -12,12 +12,12 @@ export interface ReservationDto {
 
 export interface ReservationSearchOptions {
     userId: ObjectId;
-    dateStart: Date;
-    dateEnd: Date;
+    dateStart?: Date;
+    dateEnd?: Date;
 }
 
 export interface IReservation {
     addReservation( data: ReservationDto ): Promise<Reservation>;
-    removeReservation( id: ObjectId ): Promise<void>;
+    removeReservation( id: string ): Promise<void>;
     getReservations( filter: ReservationSearchOptions ): Promise<Array<Reservation>>;
 }

@@ -1,8 +1,8 @@
 /* eslint-disable prettier/prettier */
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';//
 import { IReservation, ReservationDto, ReservationSearchOptions } from './reservation.interface';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
+import { Model } from 'mongoose';
 import { Reservation, ReservationDocument } from './reservation.schema';
 
 @Injectable()
@@ -11,6 +11,7 @@ export class ReservationService implements IReservation {
 
     async addReservation( data: ReservationDto ): Promise<Reservation> {
         
+        //  проверка на даты
         if ( data.dateStart > data.dateEnd ) {
             throw new Error("Дата выезда должна быть позже даты заезда");
         }
@@ -26,18 +27,21 @@ export class ReservationService implements IReservation {
         }).exec();
 
         if ( reserveExisted ) {
-            throw new Error("Есть бронь на указанные даты");
+            throw new ForbiddenException("Есть бронь на указанные даты");
         }
 
         const newReservation = new this.reservationModel(data);
-        return newReservation.save();
+        return await newReservation.save();
     };
 
-    async removeReservation( id: ObjectId ): Promise<void> {
-        await this.reservationModel.findByIdAndDelete(id).exec();
+    async removeReservation( id: string ): Promise<void> {
+        const reserve = await this.reservationModel.findByIdAndDelete(id).exec();
+        if ( !reserve ) {
+            throw new NotFoundException("Бронь не найдена");
+        }
     };
 
     async getReservations( filter: ReservationSearchOptions ): Promise<Array<Reservation>> {
-        return this.reservationModel.find(filter).exec();
+        return await this.reservationModel.find(filter).exec();
     };
 }
